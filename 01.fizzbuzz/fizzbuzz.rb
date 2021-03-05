@@ -9,4 +9,3 @@
     puts num
   end
 end
-
