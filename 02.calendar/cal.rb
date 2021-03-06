@@ -5,8 +5,8 @@ require 'date'
 params = ARGV.getopts('y:', 'm:')
 now = Date.today
 
-input_year = params["y"] ? params["y"].to_i : now.year.to_i
-input_month = params["m"] ? params["m"].to_i : now.month.to_i
+input_year = params["y"] ? params["y"].to_i : now.year
+input_month = params["m"] ? params["m"].to_i : now.month
 input_date = Date.new(input_year, input_month)
 input_date_last_date = Date.new(input_year, input_month, -1)
 
