@@ -20,4 +20,4 @@ input_date.upto(input_date_last_date){ |date|
   print "\n" if date.saturday?
 }
 
-puts "\n"
+puts "\n"*2
