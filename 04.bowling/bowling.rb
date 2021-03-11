@@ -27,10 +27,21 @@ end
 
 point = 0
 frames.each_with_index do |frame, i|
+  if i == 8 && frame[0] == 10 #9フレーム目がストライクのとき
+    point += 10 + frames[i+1][0] + frames[i+1][1]
+    break
+  elsif i == 8 && frame.sum == 10 #9フレーム目がスペアのとき
+    point += 10 + frames[i+1][0]
+    break
+  elsif i == 8
+    point += frame.sum
+    break
+  end
+
   if frame[0] == 10 # strike
     if frames[i+1][0] != 10 #次の一投がストライクでないなら
       point += 10 + frames[i+1][0] + frames[i+1][1]
-    else
+    else #次の一投がストライク
       point += 10 + frames[i+1][0] + frames[i+2][0]
     end
   elsif frame.sum == 10 # spare
@@ -39,4 +50,10 @@ frames.each_with_index do |frame, i|
     point += frame.sum
   end
 end
+
+#10フレーム目を計算
+frames[9..-1][0..-1].map do |n|
+  point += n.sum
+end
+
 puts point
