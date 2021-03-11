@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
 
 score = ARGV[0]
 scores = score.split(',')
@@ -24,7 +24,6 @@ shots.each_slice(2) do |s|
   frames << s
 end
 
-
 point = 0
 frames.each_with_index do |frame, i|
   if i == 8 && frame[0] == 10 # 9フレーム目がストライクのとき
@@ -38,17 +37,17 @@ frames.each_with_index do |frame, i|
     break
   end
 
-  if frame[0] == 10 # strike
-    if frames[i + 1][0] != 10 # 次の一投がストライクでないなら
-      point += 10 + frames[i + 1][0] + frames[i + 1][1]
-    else # 次の一投がストライク
-      point += 10 + frames[i + 1][0] + frames[i + 2][0]
-    end
-  elsif frame.sum == 10 # spare
-    point += 10 + frames[i + 1][0]
-  else
-    point += frame.sum
-  end
+  point += if frame[0] == 10 # strike
+             if frames[i + 1][0] != 10 # 次の一投がストライクでないなら
+               10 + frames[i + 1][0] + frames[i + 1][1]
+             else # 次の一投がストライク
+               10 + frames[i + 1][0] + frames[i + 2][0]
+             end
+           elsif frame.sum == 10 # spare
+             10 + frames[i + 1][0]
+           else
+             frame.sum
+           end
 end
 
 # 10フレーム目を計算
