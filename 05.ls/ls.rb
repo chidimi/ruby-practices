@@ -20,13 +20,23 @@ def ls(file_names)
   num_of_vertical_disp = (file_names.size.to_f / NUM_OF_HORIZONTAL_DISP).ceil
   disp_file_name_length = file_names.max_by(&:length).length + 1
 
-  file_names.each_with_index do |_file, i|
-    0.upto(NUM_OF_HORIZONTAL_DISP - 1) do |count|
-      file_name = file_names[i + num_of_vertical_disp * count]
-      print file_name.ljust(disp_file_name_length) unless file_name.nil?
+  sliced_file_names = file_names.each_slice(num_of_vertical_disp)
+
+  matrixed_file_names = sliced_file_names.map do |array|
+    if sliced_file_names.first.size != array.size
+      (sliced_file_names.first.size - array.size).times do
+        array.push('')
+      end
+    end
+    array
+  end
+
+  transposed_file_names = matrixed_file_names.transpose
+  transposed_file_names.each do |file_name_array|
+    file_name_array.each do |file_name|
+      print file_name.ljust(disp_file_name_length)
     end
     print "\n"
-    break if i == (num_of_vertical_disp - 1)
   end
 end
 
