@@ -35,6 +35,12 @@ class Counter
     @byte_counter += num
   end
 
+  def add_total(counter)
+    @line_counter += counter.line_counter
+    @words_counter += counter.words_counter
+    @byte_counter += counter.byte_counter
+  end
+
   def format(num)
     num.to_s.rjust(8)
   end
@@ -59,9 +65,7 @@ def execute(l_option, no_parameter, total_flag)
     next unless ARGF.eof?
 
     counter.show_counter(ARGF.filename)
-    total_counter.add_line_counter(counter.line_counter)
-    total_counter.add_words_counter(counter.words_counter)
-    total_counter.add_byte_counter(counter.byte_counter)
+    total_counter.add_total(counter)
 
     counter = Counter.new(l_option, no_parameter)
   end
