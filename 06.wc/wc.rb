@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+
 class Counter
   attr_reader :line_counter, :words_counter, :byte_counter
 
@@ -35,12 +36,6 @@ class Counter
     @byte_counter += num
   end
 
-  def add_total(counter)
-    @line_counter += counter.line_counter
-    @words_counter += counter.words_counter
-    @byte_counter += counter.byte_counter
-  end
-
   def format(num)
     num.to_s.rjust(8)
   end
@@ -59,13 +54,15 @@ def execute(l_option, no_parameter, total_flag)
   total_counter = Counter.new(l_option, no_parameter)
   ARGF.each_line do |line|
     counter.add_line_counter(1)
-    counter.add_words_counter(line.split(/\s+/).count { |str| str != '' })
+    counter.add_words_counter(line.split.count)
     counter.add_byte_counter(line.bytesize)
 
     next unless ARGF.eof?
 
     counter.show_counter(ARGF.filename)
-    total_counter.add_total(counter)
+    total_counter.add_line_counter(counter.line_counter)
+    total_counter.add_words_counter(counter.words_counter)
+    total_counter.add_byte_counter(counter.byte_counter)
 
     counter = Counter.new(l_option, no_parameter)
   end
