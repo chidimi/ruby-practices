@@ -30,6 +30,8 @@ class Game
     total
   end
 
+  private
+
   def prev_frame_is_strike?
     @current_frame_count > 1 && @frames[@current_frame_count - 2].strike?
   end
