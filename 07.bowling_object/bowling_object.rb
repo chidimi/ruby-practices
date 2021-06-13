@@ -23,24 +23,24 @@ class Game
       @current_frame_count += 1
 
       total += frame.score
-      total += frame.first_shot.score + frame.second_shot.score if prev_frame_is_strike?
-      total += frame.first_shot.score if prev_frame_is_spare?
-      total += frame.first_shot.score if strike_is_two_consecutive?
+      total += frame.first_shot.score + frame.second_shot.score if prev_frame_strike?
+      total += frame.first_shot.score if prev_frame_spare?
+      total += frame.first_shot.score if strike_two_consecutive?
     end
     total
   end
 
   private
 
-  def prev_frame_is_strike?
+  def prev_frame_strike?
     @current_frame_count > 1 && @frames[@current_frame_count - 2].strike?
   end
 
-  def prev_frame_is_spare?
+  def prev_frame_spare?
     @current_frame_count > 1 && @frames[@current_frame_count - 2].spare?
   end
 
-  def strike_is_two_consecutive?
+  def strike_two_consecutive?
     @current_frame_count > 2 && @frames[@current_frame_count - 2].strike? && @frames[@current_frame_count - 3].strike?
   end
 end
