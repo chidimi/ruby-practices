@@ -3,7 +3,6 @@
 class Game
   def initialize(shots_text)
     shots_array = shots_text.split(',')
-    @frames = []
     @frames = Array.new(9) do
       shot = shots_array.shift
       if shot == 'X'
