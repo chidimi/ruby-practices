@@ -5,11 +5,11 @@ class Game
     shots_array = shots_text.split(',')
     @frames = Array.new(9) do
       shot = shots_array.shift
-      @frames << if shot == 'X'
-                   Frame.new(shot)
-                 else
-                   Frame.new(shot, shots_array.shift)
-                 end
+      if shot == 'X'
+        Frame.new(shot)
+      else
+        Frame.new(shot, shots_array.shift)
+      end
     end
     @frames << Frame.new(*shots_array)
   end
