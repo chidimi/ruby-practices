@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 class Game
-  def initialize(shots)
-    shots_array = shots.split(',')
+  def initialize(shots_text)
+    shots_array = shots_text.split(',')
     @frames = []
-    while @frames.size < 9
+    @frames = Array.new(9) do
       shot = shots_array.shift
-      @frames << if shot == 'X'
-                   Frame.new(shot)
-                 else
-                   Frame.new(shot, shots_array.shift)
-                 end
+      if shot == 'X'
+        Frame.new(shot)
+      else
+        Frame.new(shot, shots_array.shift)
+      end
     end
     @frames << Frame.new(*shots_array)
   end
