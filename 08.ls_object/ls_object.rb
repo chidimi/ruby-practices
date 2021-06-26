@@ -5,18 +5,33 @@ class Command
   def initialize(l_option: false, a_option: false, r_option: false)
     file_paths = a_option ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
     sorted_file_paths = r_option ? file_paths.sort.reverse : file_paths.sort
-    @files = sorted_file_paths.map do |file_path|
+    files = sorted_file_paths.map do |file_path|
       LsFile.new(file_path, File::Stat.new(file_path))
     end
-    @formatter = l_option ? LognFormatter.new : ShortFormatter.new
+    @file_container = LsFileContainer.new(files)
+    @formatter = l_option ? LongFormatter.new : ShortFormatter.new
   end
 
   def output
-    @formatter.print_file_list(@files)
+    @formatter.print_file_list(@file_container)
+  end
+end
+
+class LsFileContainer
+  attr_reader :files, :max_file_size, :max_file_nlink, :total_file_blocks, :disp_file_name_length
+
+  def initialize(files)
+    @files = files
+    @max_file_size = files.map(&:size).max
+    @max_file_nlink = files.map(&:nlink).max
+    @total_file_blocks = files.map(&:blocks).sum
+    @disp_file_name_length = files.map { |file| file.path.length }.max + 1
   end
 end
 
 class LsFile
+  attr_reader :type, :permission, :nlink, :uid, :gid, :size, :mtime, :path, :blocks
+
   PERMISSION_TABLE = {
     '0' => '---',
     '1' => '-x-',
@@ -37,6 +52,7 @@ class LsFile
     @size = file_stat.size
     @mtime = file_stat.mtime.strftime('%_m %_d %H:%M')
     @path = file_path
+    @blocks = file_stat.blocks
   end
 
   private
@@ -54,11 +70,47 @@ class Formatter
 end
 
 class LongFormatter < Formatter
-  def print_file_list(files); end
+  def print_file_list(file_container)
+    puts "total #{file_container.total_file_blocks}"
+
+    file_container.files.each do |file|
+      print "#{file.type}#{file.permission}  "
+      print "#{file.nlink.to_s.rjust(file_container.max_file_nlink.to_s.length)} "
+      print "#{file.uid}  #{file.gid}  "
+      print "#{file.size.to_s.rjust(file_container.max_file_size.to_s.length)} "
+      print "#{file.mtime} "
+      print file.path
+      puts
+    end
+  end
 end
 
 class ShortFormatter < Formatter
-  def print_file_list(files); end
+  NUM_OF_HORIZONTAL_DISP = 3
+
+  def print_file_list(file_container)
+    num_of_vertical_disp = (file_container.files.size.to_f / NUM_OF_HORIZONTAL_DISP).ceil
+    sliced_files = file_container.files.each_slice(num_of_vertical_disp)
+
+    matrixed_files = sliced_files.map do |array|
+      if sliced_files.first.size != array.size
+        (sliced_files.first.size - array.size).times do
+          array.push(nil)
+        end
+      end
+      array
+    end
+
+    transposed_files = matrixed_files.transpose
+    transposed_files.each do |file_array|
+      file_array.each do |file|
+        print file.path.ljust(file_container.disp_file_name_length) unless file.nil?
+      end
+      puts
+    end
+  end
 end
 
-p Command.new
+options = ARGV.getopts('a', 'r', 'l')
+command = Command.new(l_option: options['l'], a_option: options['a'], r_option: options['r'])
+command.output
