@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'optparse'
 require 'etc'
 
 class Command
-  def initialize(l_option: false, a_option: false, r_option: false)
+  def initialize(a_option: false, l_option: false, r_option: false)
     file_paths = a_option ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
     sorted_file_paths = r_option ? file_paths.sort.reverse : file_paths.sort
     files = sorted_file_paths.map do |file_path|
@@ -111,6 +113,6 @@ class ShortFormatter < Formatter
   end
 end
 
-options = ARGV.getopts('a', 'r', 'l')
-command = Command.new(l_option: options['l'], a_option: options['a'], r_option: options['r'])
+options = ARGV.getopts('a', 'l', 'r')
+command = Command.new(a_option: options['a'], l_option: options['l'], r_option: options['r'])
 command.output
