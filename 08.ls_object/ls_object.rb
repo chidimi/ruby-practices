@@ -92,18 +92,10 @@ class ShortFormatter < Formatter
 
   def print_file_list(file_container)
     num_of_vertical_disp = (file_container.files.size.to_f / NUM_OF_HORIZONTAL_DISP).ceil
-    sliced_files = file_container.files.each_slice(num_of_vertical_disp)
+    sliced_files = file_container.files.each_slice(num_of_vertical_disp).to_a
+    sliced_files[-1] = sliced_files[-1].concat([nil] * (sliced_files[1].length - sliced_files[-1].length))
 
-    matrixed_files = sliced_files.map do |array|
-      if sliced_files.first.size != array.size
-        (sliced_files.first.size - array.size).times do
-          array.push(nil)
-        end
-      end
-      array
-    end
-
-    transposed_files = matrixed_files.transpose
+    transposed_files = sliced_files.transpose
     transposed_files.each do |file_array|
       file_array.each do |file|
         print file.path.ljust(file_container.disp_file_name_length) unless file.nil?
