@@ -15,7 +15,7 @@ class Command
   end
 
   def output
-    @formatter.print_file_list(@file_container)
+    @formatter.print_file_list(@file_container) unless @file_container.empty?
   end
 end
 
@@ -27,7 +27,11 @@ class LsFileContainer
     @max_file_size = files.map(&:size).max
     @max_file_nlink = files.map(&:nlink).max
     @total_file_blocks = files.map(&:blocks).sum
-    @disp_file_name_length = files.map { |file| file.path.length }.max + 1
+    @disp_file_name_length = files.map { |file| file.path.length }.max.to_i + 1
+  end
+
+  def empty?
+    @files.empty?
   end
 end
 
@@ -93,7 +97,7 @@ class ShortFormatter < Formatter
   def print_file_list(file_container)
     num_of_vertical_disp = (file_container.files.size.to_f / NUM_OF_HORIZONTAL_DISP).ceil
     sliced_files = file_container.files.each_slice(num_of_vertical_disp).to_a
-    sliced_files[-1] = sliced_files[-1].concat([nil] * (sliced_files[1].length - sliced_files[-1].length))
+    sliced_files[-1] = sliced_files[-1].concat([nil] * (sliced_files[0].length - sliced_files[-1].length))
 
     transposed_files = sliced_files.transpose
     transposed_files.each do |file_array|
